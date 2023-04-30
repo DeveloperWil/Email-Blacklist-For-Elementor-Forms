@@ -13,8 +13,36 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
+/**
+ * Checks to see if Elementor Pro is installed. Returns admin error and deactivates plugin if Elementor Pro is not installed.
+ *
+ * @return void
+ */
+function ebfef_check_for_elementor(){
+	if (!function_exists('is_plugin_active')) {
+		include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+	}
+	if( !is_plugin_active( 'elementor-pro/elementor-pro.php' ) ){
+		add_action( 'admin_notices', 'ebfef_fail_load' );
+		deactivate_plugins( plugin_basename( __FILE__) );
+	}
+}
+add_action( 'plugins_loaded', 'ebfef_check_for_elementor' );
 
+/**
+ * Admin error message if Elementor Pro is not installed
+ *
+ * @return void
+ */
+function ebfef_fail_load() {
+	load_plugin_textdomain( 'elementor-forms-blacklist' );
 
+	$message = '<div class="error">';
+	$message .= '<h3>' . esc_html__( 'Elementor Pro plugin is missing.', 'elementor-forms-blacklist' ) . '</h3>';
+	$message .= '<p>' . esc_html__( 'You need to install and active the Elementor Pro plugin for Email Blacklist for Elementor Forms to work!.', 'elementor-forms-blacklist' ) . '</p>';
+	$message .= '</div>';
+	echo $message;
+}
 /**
  * Add new Blacklist control to the Elementor form widget
  *
