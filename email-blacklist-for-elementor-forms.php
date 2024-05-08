@@ -3,10 +3,11 @@
  * Plugin Name: Email Blacklist for Elementor Forms
  * Plugin URI: https://zeropointdevelopment.com
  * Description: Adds a text area control called "Blacklist" to the Elementor Forms control. Blocks outgoing emails if they match with any on the blacklist.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Wil Brown
  * Author URI: https://zeropointdevelopment.com/about
- * Text Domain: email-blacklist-for-elementor-forms
+ * Text Domain: elementor-forms-blacklist
+ * Domain Path: /languages
  * License: GPL2+
  */
 
@@ -83,9 +84,9 @@ function elementor_forms_blacklist_validation( $field, $record, $ajax_handler ) 
 	$has_blocked_email = false;
 	// Loop through the block list and match with outgoing email value
 	foreach( $blacklist_values as $blacklist_value ){
-		if( ( strpos( $field['value'], $blacklist_value ) || ( $field['value'] === $blacklist_value ) ) && !$has_blocked_email){
+		if( ( strpos( $field['value'], trim( $blacklist_value) ) || ( $field['value'] === trim( $blacklist_value ) ) ) && !$has_blocked_email){
 			$has_blocked_email = true;
-			$blocked_email_msg = '"'. $blacklist_value . '"';
+			$blocked_email_msg = '"'. trim( $blacklist_value ) . '"';
 		}
 	}
 
