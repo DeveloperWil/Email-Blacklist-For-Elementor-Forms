@@ -1,6 +1,6 @@
 === Email Blacklist For Elementor Forms ===
 Contributors: DeveloperWil
-Tags: Elementor,Elementor Forms,Email,Email Block,Blacklist,Black List,Block Email,Block Domain, Domain Block
+Tags: Elementor,Elementor Forms,Email,Email Block,Email Blacklist
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6
