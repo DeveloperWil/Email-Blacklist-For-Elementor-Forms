@@ -3,7 +3,7 @@
  * Plugin Name: Email Blacklist for Elementor Forms
  * Plugin URI: https://zeropointdevelopment.com
  * Description: Adds a text area control called "Blacklist" to the Elementor Forms control. Blocks outgoing emails if they match with any on the blacklist.
- * Version: 1.0.2
+ * Version: 1.1.0
  * Author: Wil Brown
  * Author URI: https://zeropointdevelopment.com/about
  * Text Domain: elementor-forms-blacklist
@@ -75,16 +75,22 @@ add_action( 'elementor/element/form/section_form_fields/before_section_end', 'el
  */
 function elementor_forms_blacklist_validation( $field, $record, $ajax_handler ) {
 	if(empty( $field)) return;
+
 	// Get blacklist form settings
 	$settings = $record->get( 'form_settings' );
+    if ( empty( $settings ) || ! isset( $settings['blacklist'] ) ) {
+        return; // Exit if settings or blacklist is not set
+    }
+
 	$blacklist = sanitize_textarea_field( $settings['blacklist'] );
     if ( empty( $blacklist ) ) {
         return;
     }
-	$blacklist_values = explode( ',', $blacklist );
 
+	$blacklist_values = explode( ',', $blacklist );
 	$blocked_email_msg = "that email or domain";
 	$has_blocked_email = false;
+
     // Loop through the block list and match with outgoing email value
     foreach( $blacklist_values as $blacklist_value ) {
         $blacklist_value = trim($blacklist_value); // Trim spaces
@@ -99,13 +105,21 @@ function elementor_forms_blacklist_validation( $field, $record, $ajax_handler ) 
     }
 
 	//If there's a match on the blacklist, show an error.
-	if( $has_blocked_email ){
-		$ajax_handler->add_error( $field['id'], esc_html__( 'Sorry, '. $blocked_email_msg.' is blocked for this form. Try another email address.' , 'email-blacklist-for-elementor-forms' ) );
-		return;
-	}
+    if ( $has_blocked_email ) {
+        $error_message_blocked = sprintf(
+            esc_html__( 'Sorry, %s is blocked for this form. Try another email address.', 'email-blacklist-for-elementor-forms' ),
+            $blocked_email_msg
+        );
+
+        // Apply filter to allow developers to modify the error message
+        $error_message_blocked = apply_filters( 'elementor_forms_blacklist_error_message_blocked', $error_message_blocked, $blocked_email_msg );
+
+        $ajax_handler->add_error( $field['id'], $error_message_blocked );
+        return;
+    }
 
     // Validate email format
-    if ( ! is_email( $field['value'] ) ) {
+    if ( ! is_email( sanitize_email( $field['value'] ) ) ) {
         $ajax_handler->add_error( $field['id'], esc_html__( 'Invalid email format','email-blacklist-for-elementor' ) );
     }
 

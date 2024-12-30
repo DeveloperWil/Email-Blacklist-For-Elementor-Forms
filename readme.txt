@@ -3,8 +3,8 @@ Contributors: DeveloperWil
 Tags: Elementor,Elementor Forms,Email,Email Block,Email Blacklist
 Requires at least: 6.0
 Requires PHP: 8.1
-Tested up to: 6.7
-Stable tag: 1.0.2
+Tested up to: 6.7.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,3 +55,10 @@ Probably not but it's your site, so your choice.  Expect some unhappy support ti
 
 = 1.0 =
 * Initial release.
+
+= 1.1.0 =
+* Added a filter 'elementor_forms_blacklist_error_message_blocked' to allow for a custom error message.
+* Usage add_filter( 'elementor_forms_blacklist_error_message_blocked', function( $error_message, $blocked_email ) {
+          return sprintf( 'Custom Error: The email or domain %s is not allowed.', $blocked_email );
+      }, 10, 2 );
+* Sanitised $field['value'] in validation check
